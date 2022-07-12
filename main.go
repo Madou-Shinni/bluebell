@@ -16,16 +16,21 @@ import (
 	"web_app/logger"
 	"web_app/routes"
 	"web_app/settings"
+	snowflake "web_app/tools"
 )
 
 // Web开发脚手架
 func main() {
-	if len(os.Args) < 2 { // 命令行输入
+	/*if len(os.Args) < 2 { // 命令行输入
 		fmt.Println("请输入配置文件路径！")
 		return
-	}
+	}*/
 	// 1.加载配置文件
-	if err := settings.Init(os.Args[1]); err != nil {
+	/*if err := settings.Init(os.Args[1]); err != nil {
+		fmt.Printf("init settings faild,err:%v\n", err)
+		return
+	}*/
+	if err := settings.Init(); err != nil {
 		fmt.Printf("init settings faild,err:%v\n", err)
 		return
 	}
@@ -49,6 +54,12 @@ func main() {
 		return
 	}
 	defer redis.Close()
+
+	// 雪花算法，分布式ID生成
+	if err := snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineId); err != nil {
+		fmt.Printf("init snowflake failed,err:%v\n", err)
+		return
+	}
 
 	// 5.注册路由
 	r := routes.SetUp()
