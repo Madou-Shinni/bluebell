@@ -1,0 +1,30 @@
+app:
+  name: "bluebell"
+  mode: "dev"
+  port: 8081
+
+log:
+  level: "debug"
+  filename: "bluebell.log"
+  # 文件大小 M
+  max_size: 200
+  # 保存时间 天
+  max_age: 30
+  # 备份时间
+  max_backups: 7
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: "123456"
+  dbname: "bluebell"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+redis:
+  host: "112.124.14.11"
+  port: 6379
+  password: "XW123456789a"
+  db: 0
+  pool_size: 100
