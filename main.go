@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -13,7 +12,6 @@ import (
 	"time"
 	"web_app/controller"
 	"web_app/dao/mysql"
-	"web_app/dao/redis"
 	"web_app/logger"
 	"web_app/routes"
 	"web_app/settings"
@@ -36,7 +34,7 @@ func main() {
 		return
 	}
 	// 2.初始化日志
-	if err := logger.Init(settings.Conf.LogConfig); err != nil {
+	if err := logger.Init(settings.Conf.LogConfig, settings.Conf.Mode); err != nil {
 		fmt.Printf("init logger faild,err:%v\n", err)
 		return
 	}
@@ -50,11 +48,11 @@ func main() {
 	defer mysql.Close()
 
 	// 4.初始化redis连接
-	if err := redis.Init(settings.Conf.RedisConfig); err != nil {
+	/*if err := redis.Init(settings.Conf.RedisConfig); err != nil {
 		fmt.Printf("init redis faild,err:%v\n", err)
 		return
 	}
-	defer redis.Close()
+	defer redis.Close()*/
 
 	// 雪花算法，分布式ID生成
 	if err := snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineId); err != nil {
@@ -70,7 +68,7 @@ func main() {
 	r := routes.SetUpRouter()
 	// 6.启动服务（优雅关机）
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
+		Addr:    fmt.Sprintf(":%d", settings.Conf.Port),
 		Handler: r,
 	}
 

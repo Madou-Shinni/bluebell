@@ -1,7 +1,6 @@
-app:
-  name: "bluebell"
-  mode: "dev"
-  port: 8080
+name: "bluebell"
+mode: "dev"
+port: 8080
 start_time: "2022-07-12"
 machine_id: 1
 

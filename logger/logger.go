@@ -16,7 +16,7 @@ import (
 	"web_app/settings"
 )
 
-func Init(cfg *settings.LogConfig) (err error) {
+func Init(cfg *settings.LogConfig, mode string) (err error) {
 	writeSyncer := getLogWriter(
 		cfg.Filename,
 		cfg.MaxSize,
@@ -32,7 +32,17 @@ func Init(cfg *settings.LogConfig) (err error) {
 		return
 	}
 
-	core := zapcore.NewCore(encoder, writeSyncer, l)
+	var core zapcore.Core
+	if mode == "dev" { // 开发模式
+		// 日志输出到终端
+		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+		core = zapcore.NewTee(
+			zapcore.NewCore(encoder, writeSyncer, l),
+			zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel),
+		)
+	} else { // 仅输出日志到文件
+		core = zapcore.NewCore(encoder, writeSyncer, l)
+	}
 	// 打印函数行数
 	logger := zap.New(core, zap.AddCaller())
 	// 替换zap库中全局的logger对象
