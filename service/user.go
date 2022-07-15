@@ -1,18 +1,43 @@
 package service
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"go.uber.org/zap"
 	"web_app/dao/mysql"
 	"web_app/models"
 	snowflake "web_app/tools"
 )
 
+// 密码盐
+var salt = "www.yumclor.com"
+
 // 用户注册
-func SignUp(p *models.ParamSignUp) {
+func SignUp(p *models.ParamSignUp) (err error) {
 	// 1.判断用户名是否存在
-	mysql.QueryUserByUsername()
+	if err = mysql.QueryUserByUsername(p.Username); err != nil {
+		zap.L().Error("Mysql Error", zap.Error(err))
+		return err
+	}
 	// 2.生成ID
-	snowflake.GenID()
-	// 3.密码加密
+	userId := snowflake.GenID()
+	// 构造一个user实例
+	user := &models.User{
+		UserId:   userId,
+		Username: p.Username,
+		Password: md5Password(p.Password), // 3.密码加密
+	}
 	// 4.添加用户
-	mysql.InsertUser()
+	if err = mysql.InsertUser(user); err != nil {
+		zap.L().Error("Mysql Error", zap.Error(err))
+		return err
+	}
+	return
+}
+
+// 加密
+func md5Password(oldPassword string) string {
+	h := md5.New()
+	h.Write([]byte(salt))                                 // 加密码盐
+	return hex.EncodeToString(h.Sum([]byte(oldPassword))) // 把字节数组转换成16进制的字符串
 }
