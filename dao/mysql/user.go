@@ -1,6 +1,8 @@
 package mysql
 
-import "web_app/models"
+import (
+	"web_app/models"
+)
 
 // QueryUserByUsername 根据用户名查询用户
 func QueryUserByUsername(username string) (err error) {
@@ -20,4 +22,13 @@ func InsertUser(user *models.User) (err error) {
 		return err
 	}
 	return
+}
+
+// SelectUserByUsername 根据用户名查询用户
+func SelectUserByUsername(user *models.User) (u *models.User, err error) {
+	sqlStr := `select user_id,username,password from user where username = ?`
+	if err = db.Get(user, sqlStr, user.Username); err != nil {
+		return nil, err
+	}
+	return user, nil
 }
