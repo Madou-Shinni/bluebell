@@ -10,6 +10,12 @@ import (
 	snowflake "web_app/tools"
 )
 
+var (
+	ErrorUserExist    = errors.New("用户名已存在")
+	ErrorUserNotExist = errors.New("用户名不存在")
+	ErrorPassword     = errors.New("用户名或密码错误")
+)
+
 // 密码盐
 var salt = "www.yumclor.com"
 
@@ -18,7 +24,7 @@ func SignUp(p *models.ParamSignUp) (err error) {
 	// 1.判断用户名是否存在
 	if err = mysql.QueryUserByUsername(p.Username); err != nil {
 		zap.L().Error("SignUp Error", zap.Error(err))
-		return err
+		return ErrorUserNotExist
 	}
 	// 2.生成ID
 	userId := snowflake.GenID()
@@ -37,7 +43,7 @@ func SignUp(p *models.ParamSignUp) (err error) {
 }
 
 // Login 登录
-func Login(p *models.ParamLogin) (err error) {
+func Login(p *models.ParamLogin) (u *models.User, err error) {
 	oldPassword := md5Password(p.Password)
 	// 构造user实例
 	user := &models.User{
@@ -46,13 +52,14 @@ func Login(p *models.ParamLogin) (err error) {
 	// 通过用户名密码查询用户
 	if user, err = mysql.SelectUserByUsername(user); err != nil {
 		zap.L().Error("Login Error", zap.Error(err))
-		return err
+		return nil, ErrorUserNotExist
 	}
 	// 判断密码是否正确
 	if oldPassword != user.Password {
-		return errors.New("用户名或密码错误！")
+		return nil, ErrorPassword
 	}
-	return
+	user.Password = ""
+	return user, nil
 }
 
 // md5Password 加密
