@@ -23,13 +23,13 @@ func main() {
 	/*if len(os.Args) < 2 { // 命令行输入
 		fmt.Println("请输入配置文件路径！")
 		return
-	}*/
+	}
 	// 1.加载配置文件
-	/*if err := settings.Init(os.Args[1]); err != nil {
+	if err := settings.Init(os.Args[1]); err != nil {
 		fmt.Printf("init settings faild,err:%v\n", err)
 		return
 	}*/
-	if err := settings.Init(); err != nil {
+	if err := settings.Init("./conf/config.yml"); err != nil {
 		fmt.Printf("init settings faild,err:%v\n", err)
 		return
 	}
