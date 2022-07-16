@@ -25,10 +25,10 @@ func InsertUser(user *models.User) (err error) {
 }
 
 // SelectUserByUsername 根据用户名查询用户
-func SelectUserByUsername(user *models.User) (u *models.User, err error) {
+func SelectUserByUsername(user *models.User) (err error) {
 	sqlStr := `select user_id,username,password from user where username = ?`
 	if err = db.Get(user, sqlStr, user.Username); err != nil {
-		return nil, err
+		return err
 	}
-	return user, nil
+	return
 }

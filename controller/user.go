@@ -57,11 +57,11 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 	// 2.业务逻辑处理
-	user, err := service.Login(p)
+	token, err := service.Login(p)
 	if errors.Is(err, service.ErrorPassword) { // 比较抛出的错误信息
 		ResponseError(c, models.CodePassword)
 		return
 	}
 	// 3.返回响应
-	ResponseSuccess(c, user)
+	ResponseSuccess(c, token)
 }

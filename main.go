@@ -15,7 +15,7 @@ import (
 	"web_app/logger"
 	"web_app/routes"
 	"web_app/settings"
-	snowflake "web_app/tools"
+	"web_app/tools/snowflake"
 )
 
 // Web开发脚手架

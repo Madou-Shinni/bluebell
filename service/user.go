@@ -7,7 +7,8 @@ import (
 	"go.uber.org/zap"
 	"web_app/dao/mysql"
 	"web_app/models"
-	snowflake "web_app/tools"
+	"web_app/tools/jwt"
+	"web_app/tools/snowflake"
 )
 
 var (
@@ -43,23 +44,23 @@ func SignUp(p *models.ParamSignUp) (err error) {
 }
 
 // Login 登录
-func Login(p *models.ParamLogin) (u *models.User, err error) {
+func Login(p *models.ParamLogin) (token string, err error) {
 	oldPassword := md5Password(p.Password)
 	// 构造user实例
 	user := &models.User{
 		Username: p.Username, Password: md5Password(p.Password),
 	}
-	// 通过用户名密码查询用户
-	if user, err = mysql.SelectUserByUsername(user); err != nil {
+	// 通过用户名密码查询用户（参数传递的是指针）
+	if err = mysql.SelectUserByUsername(user); err != nil {
 		zap.L().Error("Login Error", zap.Error(err))
-		return nil, ErrorUserNotExist
+		return "", ErrorUserNotExist
 	}
 	// 判断密码是否正确
 	if oldPassword != user.Password {
-		return nil, ErrorPassword
+		return "", ErrorPassword
 	}
-	user.Password = ""
-	return user, nil
+	// 生成jwt的token
+	return jwt.GenToken(user.UserId, user.Username)
 }
 
 // md5Password 加密
