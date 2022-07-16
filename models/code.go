@@ -11,6 +11,11 @@ const (
 	CodeUserNotExist
 	CodePassword
 	CodeServerBusy
+
+	// jwt认证
+	CodeNeedLogin
+	CodeInvalidToken
+	CodeExpireToken
 )
 
 var codeMsgMap = map[ResCode]string{
@@ -20,6 +25,9 @@ var codeMsgMap = map[ResCode]string{
 	CodeUserNotExist: "用户名不存在",
 	CodePassword:     "用户名或密码错误",
 	CodeServerBusy:   "服务繁忙",
+	CodeNeedLogin:    "需要登录",
+	CodeInvalidToken: "无效的token",
+	CodeExpireToken:  "token已过期",
 }
 
 func (c ResCode) Msg() string {
