@@ -9,8 +9,6 @@ import (
 	"web_app/tools/jwt"
 )
 
-var ContextUserIdKey = "userId" // userId
-
 // JwtMiddleware jwt中间件
 func JwtMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -43,7 +41,7 @@ func JwtMiddleware() gin.HandlerFunc {
 			return
 		}
 		// 将请求的userId信息保存到上下文，后续可以通过c.Get("userId")获取
-		c.Set(ContextUserIdKey, tokenStruck.UserId)
+		c.Set(controller.ContextUserIdKey, tokenStruck.UserId)
 		c.Next()
 	}
 }
