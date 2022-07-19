@@ -54,3 +54,18 @@ func GetInvitationDetailHandler(c *gin.Context) {
 	// 3.响应
 	ResponseSuccess(c, data)
 }
+
+// GetInvitationListHandler 获取帖子列表
+func GetInvitationListHandler(c *gin.Context) {
+	// 1.获取分页参数
+	pageNum, pageSize := GetPageInfo(c)
+	// 2.查询帖子列表
+	data, err := service.GetInvitationList(pageNum, pageSize)
+	if err != nil {
+		zap.L().Error("service.GetInvitationList() failed", zap.Error(err))
+		ResponseError(c, models.CodeServerBusy)
+		return
+	}
+	// 3.响应
+	ResponseSuccess(c, data)
+}

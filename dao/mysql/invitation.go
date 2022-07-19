@@ -21,3 +21,12 @@ func SelectInvitationById(iId int64) (i *models.Invitation, err error) {
 	err = db.Get(i, sqlStr, iId)
 	return
 }
+
+// SelectInvitationList 查询帖子列表
+func SelectInvitationList(pageNum, pageSize int64) (i []*models.Invitation, err error) {
+	sqlStr := `select id,invitation_id,title,content,author_id,community_id,status,create_time,update_time
+               from invitation limit ?,?`
+	i = make([]*models.Invitation, 0, 2) // 参数2：长度 参数3：容量
+	err = db.Select(&i, sqlStr, (pageNum-1)*pageSize, pageSize)
+	return
+}

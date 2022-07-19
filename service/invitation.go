@@ -46,3 +46,39 @@ func GetInvitationDetailById(iId int64) (data *models.ApiInvitationDetail, err e
 	}
 	return
 }
+
+// GetInvitationList 获取帖子列表
+func GetInvitationList(pageNum, pageSize int64) (data []*models.ApiInvitationDetail, err error) {
+	list, err := mysql.SelectInvitationList(pageNum, pageSize)
+	if err != nil {
+		zap.L().Error("mysql.SelectInvitationList() failed", zap.Error(err))
+		return
+	}
+	data = make([]*models.ApiInvitationDetail, 0, len(list))
+	for _, i := range list {
+		// 根据作者Id查询作者信息
+		user, err := mysql.GetUserById(i.AuthorId)
+		if err != nil {
+			zap.L().Error("mysql.GetUserById(i.AuthorId) failed",
+				zap.Int64("authorId", i.AuthorId),
+				zap.Error(err))
+			continue
+		}
+		// 根据社区id查询社区详情
+		c, err := mysql.SelectCommunityDetailById(i.CommunityId)
+		if err != nil {
+			zap.L().Error("mysql.SelectCommunityDetailById(i.CommunityId) failed",
+				zap.Int64("communityId", i.CommunityId),
+				zap.Error(err))
+			continue
+		}
+		apiInvitationDetail := &models.ApiInvitationDetail{
+			AuthorName:      user.Username,
+			Invitation:      i,
+			CommunityDetail: c,
+		}
+		data = append(data, apiInvitationDetail)
+	}
+
+	return
+}
