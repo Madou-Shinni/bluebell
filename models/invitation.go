@@ -14,3 +14,10 @@ type Invitation struct { // go 内存对齐（相同类型的字段放在一起�
 	CreateTime   time.Time `json:"createTime" db:"create_time"`
 	UpdateTime   time.Time `json:"updateTime" db:"update_time"`
 }
+
+// ApiInvitationDetail 帖子详情接口结构体
+type ApiInvitationDetail struct {
+	AuthorName       string                   `json:"authorName"`
+	*Invitation      `json:"invitation"`      // 嵌入帖子结构体
+	*CommunityDetail `json:"communityDetail"` // 嵌入社区结构体
+}
