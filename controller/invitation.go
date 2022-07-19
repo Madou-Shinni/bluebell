@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"strconv"
 	"web_app/models"
 	"web_app/service"
 )
@@ -32,4 +33,24 @@ func AddInvitationHandler(c *gin.Context) {
 	}
 	// 3.响应
 	ResponseSuccess(c, models.CodeSuccess)
+}
+
+// GetInvitationDetailHandler 查询帖子详情
+func GetInvitationDetailHandler(c *gin.Context) {
+	// 1.获取参数
+	iIdStr := c.Param("id")
+	iId, err := strconv.ParseInt(iIdStr, 10, 64)
+	if err != nil {
+		zap.L().Error("Get Invitation Detail with invalid param failed", zap.Error(err))
+		return
+	}
+	// 2.根据id查询帖子
+	data, err := service.GetInvitationDetailById(iId)
+	if err != nil {
+		zap.L().Error("service.GetInvitationDetailById(iId) failed", zap.Error(err))
+		ResponseError(c, models.CodeServerBusy)
+		return
+	}
+	// 3.响应
+	ResponseSuccess(c, data)
 }
