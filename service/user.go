@@ -44,23 +44,26 @@ func SignUp(p *models.ParamSignUp) (err error) {
 }
 
 // Login 登录
-func Login(p *models.ParamLogin) (token string, err error) {
+func Login(p *models.ParamLogin) (user *models.User, err error) {
 	oldPassword := md5Password(p.Password)
 	// 构造user实例
-	user := &models.User{
+	user = &models.User{
 		Username: p.Username, Password: md5Password(p.Password),
 	}
 	// 通过用户名密码查询用户（参数传递的是指针）
 	if err = mysql.SelectUserByUsername(user); err != nil {
 		zap.L().Error("Login Error", zap.Error(err))
-		return "", ErrorUserNotExist
+		return nil, ErrorUserNotExist
 	}
 	// 判断密码是否正确
 	if oldPassword != user.Password {
-		return "", ErrorPassword
+		return nil, ErrorPassword
 	}
 	// 生成jwt的token
-	return jwt.GenToken(user.UserId, user.Username)
+	token, err := jwt.GenToken(user.UserId, user.Username)
+	user.Token = token
+	user.Password = ""
+	return
 }
 
 // md5Password 加密
