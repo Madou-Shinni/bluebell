@@ -27,6 +27,8 @@ func SetUpRouter() *gin.Engine {
 		v1.GET("/invitation/:id", controller.GetInvitationDetailHandler)
 		v1.GET("/invitation/list", controller.GetInvitationListHandler)
 		v1.POST("/invitation/vote", controller.InvitationVoteHandler)
+		// 根据时间或分数获取帖子列表
+		v1.GET("/invitation/listBy", controller.GetInvitationListByHandler)
 	}
 	return r
 }

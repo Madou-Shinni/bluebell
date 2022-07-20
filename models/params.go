@@ -23,3 +23,10 @@ type ParamVoteData struct {
 	// 赞成票(1) 还是 反对票(-1) 取消投票(0)
 	Direction int8 `json:"direction,string" binding:"oneof=1 -1 0"`
 }
+
+// ParamInvitationList 获取帖子列表参数
+type ParamInvitationList struct {
+	Page      int64  `json:"page" form:"page"`
+	Size      int64  `json:"size"form:"size"`
+	OrderTime string `json:"orderTime" form:"orderTime"`
+}
