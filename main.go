@@ -12,6 +12,7 @@ import (
 	"time"
 	"web_app/controller"
 	"web_app/dao/mysql"
+	"web_app/dao/redis"
 	"web_app/logger"
 	"web_app/routes"
 	"web_app/settings"
@@ -48,11 +49,11 @@ func main() {
 	defer mysql.Close()
 
 	// 4.初始化redis连接
-	/*if err := redis.Init(settings.Conf.RedisConfig); err != nil {
+	if err := redis.Init(settings.Conf.RedisConfig); err != nil {
 		fmt.Printf("init redis faild,err:%v\n", err)
 		return
 	}
-	defer redis.Close()*/
+	defer redis.Close()
 
 	// 雪花算法，分布式ID生成
 	if err := snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineId); err != nil {

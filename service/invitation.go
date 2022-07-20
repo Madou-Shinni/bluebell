@@ -3,6 +3,7 @@ package service
 import (
 	"go.uber.org/zap"
 	"web_app/dao/mysql"
+	"web_app/dao/redis"
 	"web_app/models"
 	"web_app/tools/snowflake"
 )
@@ -12,7 +13,16 @@ func AddInvitation(i *models.Invitation) (err error) {
 	// 1.生成id
 	i.InvitationId = snowflake.GenID()
 	// 2.保存到mysql
-	return mysql.InsertInvitation(i)
+	err = mysql.InsertInvitation(i)
+	if err != nil {
+		return err
+	}
+	// 3.保存到redis
+	err = redis.AddInvitation(i.InvitationId)
+	if err != nil {
+		return err
+	}
+	return
 }
 
 // GetInvitationDetailById 根据帖子id获取帖子详情

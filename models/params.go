@@ -21,5 +21,5 @@ type ParamVoteData struct {
 	// 帖子id
 	InvitationId int64 `json:"invitationId,string" binding:"required"`
 	// 赞成票(1) 还是 反对票(-1) 取消投票(0)
-	Direction int8 `json:"direction,string" binding:"required,oneof=1 -1 0"`
+	Direction int8 `json:"direction,string" binding:"oneof=1 -1 0"`
 }
