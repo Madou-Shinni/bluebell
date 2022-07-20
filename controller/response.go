@@ -12,7 +12,7 @@ import (
 type ResponseData struct {
 	Code models.ResCode `json:"code"`
 	Msg  interface{}    `json:"msg"`
-	Data interface{}    `json:"data"`
+	Data interface{}    `json:"data,omitempty"` // omitempty当字段为空的时候不会展示
 }
 
 // ResponseError 响应错误

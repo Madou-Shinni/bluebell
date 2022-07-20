@@ -26,6 +26,7 @@ func SetUpRouter() *gin.Engine {
 		v1.POST("/invitation/add", controller.AddInvitationHandler)
 		v1.GET("/invitation/:id", controller.GetInvitationDetailHandler)
 		v1.GET("/invitation/list", controller.GetInvitationListHandler)
+		v1.POST("/invitation/vote", controller.InvitationVoteHandler)
 	}
 	return r
 }
