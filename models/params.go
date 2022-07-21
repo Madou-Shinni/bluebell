@@ -1,5 +1,10 @@
 package models
 
+const (
+	OrderTime  = "time"  // 按时间排序
+	OrderScore = "score" // 按分数排序
+)
+
 // 请求参数结构体
 
 // ParamSignUp 注册参数
@@ -26,7 +31,7 @@ type ParamVoteData struct {
 
 // ParamInvitationList 获取帖子列表参数
 type ParamInvitationList struct {
-	Page      int64  `json:"page" form:"page"`
-	Size      int64  `json:"size"form:"size"`
-	OrderTime string `json:"orderTime" form:"orderTime"`
+	Page  int64  `json:"page" form:"page"`
+	Size  int64  `json:"size"form:"size"`
+	Order string `json:"order" form:"order"`
 }

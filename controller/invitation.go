@@ -8,11 +8,6 @@ import (
 	"web_app/service"
 )
 
-const (
-	orderTime  = "time"  // 按时间排序
-	orderScore = "score" // 按分数排序
-)
-
 // AddInvitationHandler 添加帖子
 func AddInvitationHandler(c *gin.Context) {
 	// 1.获取参数
@@ -78,9 +73,9 @@ func GetInvitationListHandler(c *gin.Context) {
 // GetInvitationListByHandler 根据时间或分数获取帖子列表
 func GetInvitationListByHandler(c *gin.Context) {
 	p := &models.ParamInvitationList{
-		Page:      1,
-		Size:      10,
-		OrderTime: "",
+		Page:  1,
+		Size:  10,
+		Order: models.OrderTime,
 	}
 	// 1.获取分页参数
 	if err := c.ShouldBindQuery(p); err != nil {
@@ -89,7 +84,12 @@ func GetInvitationListByHandler(c *gin.Context) {
 		return
 	}
 	// 2.查询帖子列表
-
+	data, err := service.GetInvitationListBy(p.Page, p.Size)
+	if err != nil {
+		zap.L().Error("service.GetInvitationListBy() failed", zap.Error(err))
+		ResponseError(c, models.CodeServerBusy)
+		return
+	}
 	// 3.响应
-
+	ResponseSuccess(c, data)
 }

@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"github.com/jmoiron/sqlx"
+	"strings"
 	"web_app/models"
 )
 
@@ -28,5 +30,19 @@ func SelectInvitationList(pageNum, pageSize int64) (i []*models.Invitation, err 
                from invitation limit ?,?`
 	i = make([]*models.Invitation, 0, 2) // 参数2：长度 参数3：容量
 	err = db.Select(&i, sqlStr, (pageNum-1)*pageSize, pageSize)
+	return
+}
+
+// SelectInvitationListByIds 根据给定的id列表查询帖子数据
+func SelectInvitationListByIds(ids []string) (invitationList []*models.Invitation, err error) {
+	sqlStr := `select invitation_id,title,content,author_id,community_id,create_time from invitation
+               where invitation_id in (?)
+			   order by FIND_IN_SET(invitation_id,?)`
+	query, args, err := sqlx.In(sqlStr, ids, strings.Join(ids, ","))
+	if err != nil {
+		return
+	}
+	query = db.Rebind(query)
+	err = db.Select(&invitationList, query, args...)
 	return
 }

@@ -92,3 +92,45 @@ func GetInvitationList(pageNum, pageSize int64) (data []*models.ApiInvitationDet
 
 	return
 }
+
+// GetInvitationListBy 根据时间或分数获取帖子列表
+func GetInvitationListBy(p *models.ParamInvitationList) (data []*models.ApiInvitationDetail, err error) {
+	// 1.去Redis查询id列表
+	ids, err := redis.GetInvitationIdsInOrder(p)
+	if err != nil {
+		return
+	}
+	if len(ids) == 0 {
+		zap.L().Warn("redis.GetInvitationIdsInOrder() return 0 data")
+		return
+	}
+	// 2.根据id去MySQL查询帖子的详细信息
+	invitationList, err := mysql.SelectInvitationListByIds(ids)
+	// 将帖子的作者以及分区信息填充到帖子中
+	data = make([]*models.ApiInvitationDetail, 0, len(invitationList))
+	for _, i := range invitationList {
+		// 根据作者Id查询作者信息
+		user, err := mysql.GetUserById(i.AuthorId)
+		if err != nil {
+			zap.L().Error("mysql.GetUserById(i.AuthorId) failed",
+				zap.Int64("authorId", i.AuthorId),
+				zap.Error(err))
+			continue
+		}
+		// 根据社区id查询社区详情
+		c, err := mysql.SelectCommunityDetailById(i.CommunityId)
+		if err != nil {
+			zap.L().Error("mysql.SelectCommunityDetailById(i.CommunityId) failed",
+				zap.Int64("communityId", i.CommunityId),
+				zap.Error(err))
+			continue
+		}
+		apiInvitationDetail := &models.ApiInvitationDetail{
+			AuthorName:      user.Username,
+			Invitation:      i,
+			CommunityDetail: c,
+		}
+		data = append(data, apiInvitationDetail)
+	}
+	return
+}
